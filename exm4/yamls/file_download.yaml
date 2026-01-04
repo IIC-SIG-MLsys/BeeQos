@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: exm6-file-client
+  labels:
+    app: iperf
+  annotations:
+    cni.projectcalico.org/ipAddrs: "[\"10.240.148.145\"]"
+spec:
+  nodeName: sdu-super-server
+  containers:
+  - name: iperf
+    image: ubuntu-net:latest
+    imagePullPolicy: IfNotPresent
+    command: ["/bin/bash", "-c"]
+    args:
+      - "tail -f /dev/null"
+    volumeMounts:
+      - name: logs
+        mountPath: /logs
+  volumes:
+  - name: logs
+    hostPath:
+      path: /home/liujinyao/k8s/BeeQos/exm2/logs
+      type: DirectoryOrCreate

@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: exm2-server-high-1
+  labels:
+    app: iperf
+  annotations:
+    cni.projectcalico.org/ipAddrs: "[\"10.255.24.4\"]"
+    oncn-bwm.openeuler.org/egress-bandwidth: '{"request":"600","limit":"1000","priority":"2"}'
+    oncn-bwm.openeuler.org/ingress-bandwidth: '{"request":"600","limit":"1000","priority":"2"}'
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: hygon1
+  containers:
+    # 第一个 iperf3 server: 监听 5201
+    - name: iperf-5201
+      image: ubuntu-net:latest
+      imagePullPolicy: IfNotPresent
+      command: ["iperf3", "-s", "-p", "5201"]
+      ports:
+        - containerPort: 5201
+          name: port5201
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: exm2-server-high-2
+  labels:
+    app: iperf
+  annotations:
+    cni.projectcalico.org/ipAddrs: "[\"10.255.24.5\"]"
+    oncn-bwm.openeuler.org/egress-bandwidth: '{"request":"600","limit":"1000","priority":"2"}'
+    oncn-bwm.openeuler.org/ingress-bandwidth: '{"request":"600","limit":"1000","priority":"2"}'
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: hygon1
+  containers:
+    - name: iperf-5201
+      image: ubuntu-net:latest
+      imagePullPolicy: IfNotPresent
+      command: ["iperf3", "-s", "-p", "5201"]
+      ports:
+        - containerPort: 5201
+          name: port5201
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: exm2-server-low
+  labels:
+    app: iperf
+  annotations:
+    cni.projectcalico.org/ipAddrs: "[\"10.255.24.6\"]"
+    oncn-bwm.openeuler.org/egress-bandwidth: '{"request":"10","limit":"1000","priority":"0"}'
+    oncn-bwm.openeuler.org/ingress-bandwidth: '{"request":"10","limit":"1000","priority":"0"}'
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: hygon1
+  containers:
+  - name: iperf
+    image: ubuntu-net:latest
+    imagePullPolicy: IfNotPresent
+    command: ["iperf3", "-s", "-p", "5201"]
+    ports:
+    - containerPort: 5201    # 显式声明监听端口

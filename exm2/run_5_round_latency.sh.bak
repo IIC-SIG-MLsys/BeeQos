@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# 实验名列表
+# EXPERIMENTS=("beeqos" "htb" "no-shaper")
+EXPERIMENTS=("beeqos")
+
+# 循环次数
+NUM_RUNS=50
+
+for cur in "${EXPERIMENTS[@]}"; do
+    for id in $(seq 0 $((NUM_RUNS-1))); do
+        echo "[INFO] Running experiment: $cur, id=$id"
+
+        # 初始化操作
+        if [[ "$cur" == "beeqos" && "$id" -eq 0 ]]; then
+            cd .. && bash setup_beeqos_after_calico.sh && cd -
+        fi
+
+        if [[ "$cur" == "htb" && "$id" -eq 0 ]]; then
+            ssh root@10.102.0.235 'sudo bash -s' < ./set_htb.sh
+        fi
+
+        bash run_sockperf.sh
+
+        mkdir -p logs/latency/$cur/$id
+
+        mv logs/*.log logs/latency/$cur/$id/
+
+        if [[ "$cur" == "beeqos" && "$id" -eq $((NUM_RUNS-1)) ]]; then
+            cd .. && bash remove_beeqos_after_calico.sh && cd -
+        fi
+
+        if [[ "$cur" == "htb" && "$id" -eq $((NUM_RUNS-1)) ]]; then
+            ssh root@10.102.0.235 'sudo bash -s' < ./unset_htb.sh
+        fi
+
+        echo "[INFO] Logs moved to logs/latency/$cur/$id"
+    done
+done

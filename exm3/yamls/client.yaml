@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: client-1
+  labels:
+    app: sockperf
+  annotations:
+    cni.projectcalico.org/ipAddrs: "[\"10.255.24.1\"]"
+    oncn-bwm.openeuler.org/egress-bandwidth: '{"request":"600","limit":"1000","priority":"2"}'
+    oncn-bwm.openeuler.org/ingress-bandwidth: '{"request":"600","limit":"1000","priority":"2"}'
+spec:
+  restartPolicy: Never
+  nodeName: hygon1
+  containers:
+  - name: sockperf
+    image: ubuntu-net:latest
+    imagePullPolicy: IfNotPresent
+    command: ["/bin/bash", "-c"]
+    args:
+    - "tail -f /dev/null"

@@ -1,0 +1,160 @@
+Name:       oncn-bwm
+Version:    2.0
+Release:    1
+Summary:    Pod bandwidth management in mixed deployment scenarios of online and offline services
+License:    GPL-2.0
+URL:        https://gitee.com/src-openeuler/oncn-bwm
+Source:     %{name}-%{version}.tar.gz
+
+BuildRequires: libbpf-devel cmake gcc clang
+BuildRequires: libboundscheck
+BuildRequires: uname-build-checks kernel-devel kernel-source
+BuildRequires: llvm
+
+Requires: iproute libbpf
+Requires(preun): bpftool
+Requires: libboundscheck
+
+%description
+Pod bandwidth management in mixed deployment scenarios of online and offline services
+
+%package -n oncn-bwm-devel
+Summary:    devel tools for oncn-bwm
+Requires:   bpftrace
+
+%description -n oncn-bwm-devel
+devel tools for oncn-bwm
+
+%prep
+%autosetup -n %{name}-%{version} -p1
+
+%build
+cd bwmcli
+mkdir build && cd build &&
+cmake ..
+make
+cd ../ko
+make
+
+cd ../../
+make generate
+make bwmctl
+make bwm-cni
+make bwm-daemon
+make alg-daemon
+
+%install
+mkdir -p %{buildroot}/%{_bindir}/%{name}
+mkdir -p %{buildroot}/usr/share/bwmcli
+install -Dpm 0500 %{_builddir}/%{name}-%{version}/bwmcli/build/bpf/CMakeFiles/bwm_prio_kern.dir/bwm_prio_kern.c.o      %{buildroot}/usr/share/bwmcli/bwm_prio_kern.o
+install -Dpm 0500 %{_builddir}/%{name}-%{version}/bwmcli/build/bpf/CMakeFiles/bwm_tc.dir/bwm_tc.c.o     %{buildroot}/usr/share/bwmcli/bwm_tc.o
+install -Dpm 0500 %{_builddir}/%{name}-%{version}/bwmcli/build/bwmcli              %{buildroot}/%{_bindir}
+install -Dpm 0500 %{_builddir}/%{name}-%{version}/bwmcli/tools/bwm_monitor.bt      %{buildroot}/%{_bindir}
+mkdir -p %{buildroot}/lib/modules/bwm
+install %{_builddir}/%{name}-%{version}/bwmcli/ko/bwm.ko %{buildroot}/lib/modules/bwm
+
+mkdir -p %{buildroot}/usr/share/bwm
+install -Dpm 0500 %{_builddir}/%{name}-%{version}/pkg/bpfgo/tcedt_bpfel.o %{buildroot}/usr/share/bwm
+install -Dpm 0500 %{_builddir}/%{name}-%{version}/bin/bwmctl %{buildroot}/%{_bindir}
+install -Dpm 0500 %{_builddir}/%{name}-%{version}/bin/bwm-cni %{buildroot}%{_bindir}
+install -Dpm 0500 %{_builddir}/%{name}-%{version}/bin/bwm-daemon %{buildroot}/%{_bindir}
+install -Dpm 0500 %{_builddir}/%{name}-%{version}/bin/alg-daemon %{buildroot}/%{_bindir}
+
+
+%post
+ln -sf /lib/modules/bwm/bwm.ko /lib/modules/`uname -r`
+depmod -a
+
+%preun
+
+DisableAllDevices()
+{
+    local CGROUP2PATH
+    local CGROUP2ID
+    local tempfile
+    for NETPID in $(lsns -t net | grep net -w | awk '{print $4}'); do
+        nsenter -n -t${NETPID} bwmcli -d >/dev/null
+    done
+
+    mount |grep "type cgroup2" >/dev/null
+    if [ $? -ne 0 ]; then
+        tempfile=`mktemp -d`;
+        mount none -t cgroup2 $tempfile;
+    fi
+
+    for CGROUP2VAL in $(bpftool cgroup tree |grep _bwm_out_cg -B 1 | awk '{print $1}'); do
+        if [[ $CGROUP2VAL = /* ]]; then
+            CGROUP2PATH=$CGROUP2VAL >/dev/null
+        else
+            CGROUP2ID=$CGROUP2VAL
+            bpftool cgroup detach $CGROUP2PATH egress id $CGROUP2ID >/dev/null
+        fi
+    done
+
+    if [ -n "$tempfile" ]; then
+        umount $tempfile
+        rm -rf $tempfile
+    fi
+
+    rm -f /sys/fs/bpf/tc/globals/throttle_map >/dev/null
+    rm -f /sys/fs/bpf/tc/globals/throttle_cfg >/dev/null
+}
+
+if [ $1 -eq 0 ]; then
+    DisableAllDevices
+fi
+
+%postun
+if [ "$1" -ne "1" ]; then
+    rm -rf /lib/modules/`uname -r`/bwm.ko
+fi
+depmod -a
+
+%files
+%defattr(-,root,root)
+%attr(0500,root,root) %{_bindir}/bwmcli
+%attr(0500,root,root) %dir /usr/share/bwmcli
+%attr(0500,root,root) /usr/share/bwmcli/bwm_prio_kern.o
+%attr(0500,root,root) /usr/share/bwmcli/bwm_tc.o
+%attr(0550,root,root) %dir /lib/modules/bwm
+%attr(0440,root,root) /lib/modules/bwm/bwm.ko
+
+%attr(0500,root,root) %{_bindir}/bwmctl
+%attr(0500,root,root) %{_bindir}/bwm-cni
+%attr(0500,root,root) %{_bindir}/bwm-daemon
+%attr(0500,root,root) %{_bindir}/alg-daemon
+%attr(0500,root,root) %dir /usr/share/bwm
+%attr(0500,root,root) /usr/share/bwm/tcedt_bpfel.o
+
+%files -n oncn-bwm-devel
+%attr(0500,root,root) %{_bindir}/bwm_monitor.bt
+
+
+%changelog
+* Sat May 20 2023 JofDiamonds <kwb0523@163.com> - 1.1-4
+- fix offline packets block
+
+* Fri May 19 2023 JofDiamonds <kwb0523@163.com> - 1.1-3
+- adapt libbpf-0.8.1: prog_load_xattr will deprecated and use another way to load bpf prog
+
+* Mon Apr 17 2023 JofDiamonds <kwb0523@163.com> - 1.1-2
+- add proc file interface
+
+* Wed Feb 15 2023 JofDiamonds <kwb0523@163.com> - 1.1-1
+- clean code and use securec function
+
+* Thu Jan 5 2023 JofDiamonds <kwb0523@163.com> - 1.0-5
+- update oncn-bwm.yaml
+
+* Mon Dec 26 2022 JofDiamonds <kwb0523@163.com> - 1.0-4
+- add oncn-bwm.yaml
+
+* Tue Nov 15 2022 JofDiamonds <kwb0523@163.com> - 1.0-3
+- adapt libbpf-0.8.1
+
+* Wed Jul 20 2022 wo_cow <niuiqianqian@huawei.com> - 1.0-2
+- add permission to dir
+
+* Thu Jul 14 2022 wo_cow <niuiqianqian@huawei.com> - 1.0-1
+- init oncn-bwm
+

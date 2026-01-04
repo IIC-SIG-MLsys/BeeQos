@@ -1,0 +1,4 @@
+# 配置命令
+我们以迁移一个pod到新的节点的任务，分析所需配置的命令数量，统计时除去迁移pod所需的k8s命令数量
+BeeQos无需修改任何yaml参数，只需执行kubectl apply更新pod的部署状态
+TCHTB首先需要在原node上删除配置，我们按照最小所需命令进行分析，假设原来的tc class和qdisc不需要改变，即我们只对tc filter进行删除，需要一条命令，迁移到新节点后，我们假设已有tc qdisc而无需新建，只为其建立新的class，并将pod的匹配filter规则增加到新的class，所以最少需要3条命令。另外pod迁移也需要apply yaml，所以TCHTB方案即使是这种非常简单的配置场景最少也需要4条配置命令，且需要在目标宿主上使用sudo权限。

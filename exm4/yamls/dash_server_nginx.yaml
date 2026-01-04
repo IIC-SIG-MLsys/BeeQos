@@ -1,0 +1,101 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dash-html
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>DASH Player</title>
+      <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+    </head>
+    <body>
+      <h2>DASH Player</h2>
+      <video id="videoPlayer" controls autoplay style="width:80%;"></video>
+      <script>
+        // 使用相对路径，不依赖固定 IP/端口
+        var url = "tos_4sec_full/x264/tearsofsteel/DASH_Files/full/tearsofsteel_enc_x264_dash.mpd";
+        var player = dashjs.MediaPlayer().create();
+        player.initialize(document.querySelector("#videoPlayer"), url, true);
+      </script>
+    </body>
+    </html>
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dash-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dash-server
+  template:
+    metadata:
+      labels:
+        app: dash-server
+      annotations:
+        cni.projectcalico.org/ipAddrs: '["10.255.24.26"]'
+        oncn-bwm.openeuler.org/egress-bandwidth: '{"request":"600","limit":"1000","priority":"2"}'
+        oncn-bwm.openeuler.org/ingress-bandwidth: '{"request":"600","limit":"1000","priority":"2"}'
+    spec:
+      containers:
+      - name: dash-server
+        image: beeqos/dash-server-nginx:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: dash-volume
+          mountPath: /var/www/html                 # 挂载视频内容
+        - name: dash-html
+          mountPath: /var/www/html/index.html      # 覆盖 index.html
+          subPath: index.html
+      volumes:
+      - name: dash-volume
+        persistentVolumeClaim:
+          claimName: dash-pvc
+      - name: dash-html
+        configMap:
+          name: dash-html
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: dash-pv
+spec:
+  accessModes: ["ReadWriteOnce"]
+  capacity:
+    storage: 1Gi
+  hostPath:
+    path: /beeqos/video/hypercorn_dash_content/
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dash-pvc
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 1Gi
+      
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dash-service
+spec:
+  selector:
+    app: dash-server
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 80
+    nodePort: 31080   # 固定 NodePort
+  type: NodePort

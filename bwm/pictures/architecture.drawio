@@ -1,0 +1,89 @@
+<mxfile host="65bd71144e">
+    <diagram id="nDO9prO4VQ4ynSfQgv-R" name="Page-1">
+        <mxGraphModel dx="1004" dy="519" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="none" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="6" value="" style="edgeStyle=none;entryX=0.503;entryY=0.055;entryDx=0;entryDy=0;entryPerimeter=0;rounded=0;exitX=0;exitY=0.75;exitDx=0;exitDy=0;labelBackgroundColor=default;fontColor=default;labelBorderColor=none;fillColor=#f5f5f5;strokeColor=#fdfcfc;" edge="1" parent="1" source="38" target="5">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="370" y="75.71218599679321" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="5" value="apiserver/schduler/&#10;/etcd" style="ellipse;shape=cloud;rounded=0;labelBackgroundColor=default;fontColor=default;labelBorderColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="80" y="150" width="160" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="38" value="user" style="shape=actor;rounded=0;labelBackgroundColor=default;fontColor=default;labelBorderColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="370" y="30" width="40" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="41" value="create pod with annotations" style="text;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;rounded=0;labelBackgroundColor=default;fontColor=default;labelBorderColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="165" y="95" width="170" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="42" value="node&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=default;labelBorderColor=none;fontColor=default;" vertex="1" parent="1">
+                    <mxGeometry x="450" y="125" width="315" height="280" as="geometry"/>
+                </mxCell>
+                <mxCell id="43" value="daemon&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;labelBackgroundColor=default;labelBorderColor=none;fontColor=default;" vertex="1" parent="1">
+                    <mxGeometry x="570" y="195" width="160" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="44" value="k8sclient" style="rounded=0;labelBackgroundColor=default;fontColor=default;labelBorderColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="600" y="235" width="60" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="45" value="idmanager" style="rounded=0;labelBackgroundColor=default;fontColor=default;labelBorderColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="595" y="275" width="70" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="46" value="ebpfmgr" style="rounded=0;labelBackgroundColor=default;fontColor=default;labelBorderColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="600" y="310" width="60" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="47" value="gc" style="ellipse;aspect=fixed;rounded=0;labelBackgroundColor=default;fontColor=default;labelBorderColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="680" y="255" width="40" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" value="cni" style="rounded=0;labelBackgroundColor=default;fontColor=default;labelBorderColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="450" y="195" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="31" value="" style="edgeStyle=none;entryX=0;entryY=0.5;entryDx=0;entryDy=0;rounded=0;labelBackgroundColor=default;fontColor=default;labelBorderColor=none;exitX=0.875;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;fillColor=#f5f5f5;strokeColor=#fdfcfc;" edge="1" parent="1" source="5" target="13">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="32" value="schedule pod to node" style="edgeLabel;align=center;verticalAlign=middle;resizable=0;points=[];rounded=0;labelBackgroundColor=default;fontColor=default;labelBorderColor=none;" vertex="1" connectable="0" parent="31">
+                    <mxGeometry x="-0.1759" y="-1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="15" value="" style="edgeStyle=none;entryX=0;entryY=0.25;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;rounded=0;labelBackgroundColor=default;fontColor=default;labelBorderColor=none;" edge="1" parent="1" source="13" target="43">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="510" y="215" as="sourcePoint"/>
+                        <mxPoint x="590" y="220" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="16" value="rpc" style="edgeLabel;align=center;verticalAlign=middle;resizable=0;points=[];rounded=0;labelBackgroundColor=default;fontColor=default;labelBorderColor=none;" vertex="1" connectable="0" parent="15">
+                    <mxGeometry x="0.4733" y="-1" relative="1" as="geometry">
+                        <mxPoint x="-19" y="-9" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="33" value="cmdctl" style="rounded=0;labelBackgroundColor=default;fontColor=default;labelBorderColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="460" y="330" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="34" value="" style="edgeStyle=none;rounded=0;labelBackgroundColor=default;fontColor=default;labelBorderColor=none;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="33" target="43">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="35" value="rpc" style="edgeLabel;align=center;verticalAlign=middle;resizable=0;points=[];rounded=0;labelBackgroundColor=default;fontColor=default;labelBorderColor=none;" vertex="1" connectable="0" parent="34">
+                    <mxGeometry x="-0.2955" y="1" relative="1" as="geometry">
+                        <mxPoint x="-9" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="19" value="ebpf" style="rounded=0;labelBackgroundColor=default;fontColor=default;labelBorderColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="630" y="365" width="90" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="30" value="set ebpf" style="edgeStyle=none;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;rounded=0;labelBackgroundColor=default;fontColor=default;labelBorderColor=none;" edge="1" parent="1" source="46" target="19">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="28" value="" style="edgeStyle=none;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.55;entryY=0.95;entryDx=0;entryDy=0;entryPerimeter=0;rounded=0;labelBackgroundColor=default;fontColor=default;labelBorderColor=none;fillColor=#f5f5f5;strokeColor=#fdfcfc;" edge="1" parent="1" source="44" target="5">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="29" value="get pod annotation" style="edgeLabel;align=center;verticalAlign=middle;resizable=0;points=[];rounded=0;labelBackgroundColor=default;fontColor=default;labelBorderColor=none;" vertex="1" connectable="0" parent="28">
+                    <mxGeometry x="0.0332" relative="1" as="geometry">
+                        <mxPoint x="-27" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

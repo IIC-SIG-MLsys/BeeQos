@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: client-1
+  labels:
+    app: sockperf
+spec:
+  restartPolicy: Never
+  nodeName: hygon1
+  containers:
+  - name: sockperf
+    image: ubuntu-net:latest
+    imagePullPolicy: IfNotPresent
+    command: ["/bin/bash", "-c"]
+    args:
+    - "tail -f /dev/null"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: client-2
+  labels:
+    app: sockperf
+  annotations:
+    kubernetes.io/egress-bandwidth: "300M"
+    kubernetes.io/ingress-bandwidth: "300M"
+spec:
+  restartPolicy: Never
+  nodeName: hygon1
+  containers:
+  - name: sockperf
+    image: ubuntu-net:latest
+    imagePullPolicy: IfNotPresent
+    command: ["/bin/bash", "-c"]
+    args:
+    - "tail -f /dev/null"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: client-3
+  labels:
+    app: sockperf
+  annotations:
+    kubernetes.io/egress-bandwidth: "200M"
+    kubernetes.io/ingress-bandwidth: "200M"
+spec:
+  restartPolicy: Never
+  nodeName: hygon1
+  containers:
+  - name: sockperf
+    image: ubuntu-net:latest
+    imagePullPolicy: IfNotPresent
+    command: ["/bin/bash", "-c"]
+    args:
+    - "tail -f /dev/null"

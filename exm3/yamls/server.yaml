@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: server-1
+  labels:
+    app: sockperf
+  annotations:
+    cni.projectcalico.org/ipAddrs: "[\"10.255.24.11\"]"
+spec:
+  restartPolicy: Never
+  nodeName: sdu-super-server
+  containers:
+    - name: sockperf
+      image: ubuntu-net:latest
+      imagePullPolicy: IfNotPresent
+      command:
+        - sh
+        - -c
+        - |
+          # 启动 8 个 iperf server 实例，分别监听 5201-5208
+          for p in $(seq 5201 5208); do
+            iperf -s -p $p &
+          done
+          # 启动 sockperf server
+          sockperf sr --tcp -p 5300
+      ports:
+        - containerPort: 5201
+          name: iperf-1
+        - containerPort: 5202
+          name: iperf-2
+        - containerPort: 5203
+          name: iperf-3
+        - containerPort: 5204
+          name: iperf-4
+        - containerPort: 5205
+          name: iperf-5
+        - containerPort: 5206
+          name: iperf-6
+        - containerPort: 5207
+          name: iperf-7
+        - containerPort: 5208
+          name: iperf-8
+        - containerPort: 5300
+          name: sockperf

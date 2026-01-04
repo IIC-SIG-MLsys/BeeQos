@@ -1,0 +1,70 @@
+#!/bin/bash
+set -euo pipefail
+
+server_ip_low=10.255.24.6
+server_ip_high_1=10.255.24.4
+server_ip_high_2=10.255.24.5
+client_pod=exm2-client
+
+exm="
+# priority,start_time,duration,port,bandwidth,parallel
+low,0,50,5201,0,1
+high1,10,10,5201,400M,1
+high2,20,10,5201,800M,1
+high1,30,10,5201,400M,1
+"
+
+max_end=0
+while IFS=, read -r priority start_time duration port bandwidth parallel; do
+  [[ -z "$priority" || "$priority" == \#* ]] && continue
+  end_time=$((start_time + duration))
+  if (( end_time > max_end )); then
+    max_end=$end_time
+  fi
+done <<< "$exm"
+
+kubectl apply -f yamls/sockperf-server.yaml
+kubectl apply -f yamls/iperf-client.yaml
+
+echo "[INFO] 等待 Pod 启动并就绪..."
+pods=("exm2-client" "exm2-server-high-1" "exm2-server-high-2" "exm2-server-low")
+for pod in "${pods[@]}"; do
+  echo "  -> 等待 $pod Ready..."
+  kubectl wait --for=condition=ready pod/"$pod" --timeout=60s
+done
+echo "[INFO] 所有 Pod 已经就绪 ✅"
+
+echo "$exm" | while IFS=, read -r priority start_time duration port bandwidth parallel; do
+  [[ -z "$priority" || "$priority" == \#* ]] && continue
+
+  if [[ "$priority" == "low" ]]; then
+    server_ip=$server_ip_low
+  else
+    if [[ "$priority" == "high1" ]]; then
+      server_ip=$server_ip_high_1
+    else
+      server_ip=$server_ip_high_2
+    fi
+  fi
+
+  cmd="sleep $start_time && sockperf ul --tcp -i $server_ip -p $port -t $duration"
+  if [[ "$bandwidth" != "0" ]]; then
+    DEFAULT_MSG_SIZE=14
+    BANDWIDTH_BPS=$(echo "$bandwidth * 1000000" | bc)
+    MPS=$(echo "$BANDWIDTH_BPS / ($DEFAULT_MSG_SIZE * 8)" | bc)
+    cmd+=" --mps $MPS -m $DEFAULT_MSG_SIZE"
+  fi
+
+  log_file="/logs/${priority}_${start_time}_${duration}.log"
+
+  echo "[INFO] 启动: $cmd -> $log_file"
+
+  kubectl exec "$client_pod" -- bash -c "$cmd > $log_file 2>&1" &
+done
+
+sleep "$max_end"
+
+kubectl delete -f yamls/sockperf-server.yaml
+kubectl delete -f yamls/iperf-client.yaml
+
+echo "[INFO] 所有 sockperf 测试完成，日志在 /logs 下。"

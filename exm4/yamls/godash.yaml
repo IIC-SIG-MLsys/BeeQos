@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: godash-job
+spec:
+  template:
+    metadata:
+      annotations:
+        cni.projectcalico.org/ipAddrs: '["10.255.24.13"]'  # 固定 Pod IP
+    spec:
+      restartPolicy: Never
+      nodeName: sdu-super-server
+      hostAliases:
+      - ip: "10.255.24.10"
+        hostnames:
+        - "video.testbed.local"
+      containers:
+      - name: godash
+        image: jjq52021/godash:latest
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          uname -r > /logs/uname_log.txt && \
+          ./godash --config /logs/configure_beeqos.conf
+
+        volumeMounts:
+        - name: logs
+          mountPath: /logs
+      volumes:
+      - name: logs
+        hostPath:
+          path: /home/liujinyao/k8s/BeeQos/exm6/logs
+          type: DirectoryOrCreate

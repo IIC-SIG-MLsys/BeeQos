@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: exm6-file-server
+  labels:
+    app: iperf
+  annotations:
+    kubernetes.io/egress-bandwidth: "400M"
+    kubernetes.io/ingress-bandwidth: "400M"
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: hygon1
+  containers:
+    - name: iperf-5201
+      image: ubuntu-net:latest
+      imagePullPolicy: IfNotPresent
+      command: ["iperf3", "-s", "-p", "5201"]
+      # command: ["sockperf", "server", "-p", "5201", "--tcp"]
+      ports:
+        - containerPort: 5201
+          name: port5201

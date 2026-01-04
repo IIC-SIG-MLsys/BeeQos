@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: godash-test
+  labels:
+    app: godash
+  annotations:
+    cni.projectcalico.org/ipAddrs: "[\"10.255.24.16\"]"
+spec:
+  restartPolicy: Never
+  nodeName: sdu-super-server
+  containers:
+  - name: godash
+    image: docker.io/library/godash-with-tools:latest
+    imagePullPolicy: IfNotPresent
+    command: ["/bin/bash", "-c"]
+    args:
+    - "tail -f /dev/null"
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+  volumes:
+  - name: logs
+    hostPath:
+      path: /home/liujinyao/k8s/BeeQos/exm6/logs
+      type: DirectoryOrCreate

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: client-1
+  labels:
+    app: sockperf
+  annotations:
+    kubernetes.io/egress-bandwidth: "1G"
+    kubernetes.io/ingress-bandwidth: "1G"
+spec:
+  restartPolicy: Never
+  nodeName: hygon1
+  containers:
+  - name: sockperf
+    image: ubuntu-net:latest
+    imagePullPolicy: IfNotPresent
+    command: ["/bin/bash", "-c"]
+    args:
+    - "tail -f /dev/null"

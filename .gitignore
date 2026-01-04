@@ -1,0 +1,14 @@
+bin
+vendor
+bwm.tar
+quay.io-*
+exm1_old
+exm4-del
+logs
+log
+calico/v327/*.tar
+*.tar
+*.tar.gz
+cilium/cilium*
+BeeQosLogsBak
+exm6/testDocker/gdash-tools
