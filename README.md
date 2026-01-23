@@ -1,6 +1,6 @@
 # BeeQos
 
-BeeQos is a **research prototype** for fine-grained QoS and bandwidth management in Kubernetes clusters.
+BeeQos is a fine-grained QoS and bandwidth management system in Kubernetes clusters.
 It is implemented based on **eBPF and Linux Traffic Control (TC)**.
 
 This repository includes:
@@ -18,12 +18,12 @@ This repository includes:
 
 * **At least two physical machines or virtual machines**
 * Linux kernel with eBPF support (recommended ≥ 5.10)
-* L2 or L3 network connectivity between nodes
+* Network connectivity between nodes
 
 ### 1.2 Software Dependencies
 
 * Kubernetes (deployed via `kubeadm`)
-* Container runtime: `containerd`
+* Container runtime: `containerd` (any runtime you want is also allowed.)
 * Go ≥ 1.20 (for building control components)
 * libbpf ≥ 1.3 (installed from source)
 
