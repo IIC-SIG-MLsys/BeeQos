@@ -239,3 +239,19 @@ kubectl delete pod -n kube-system -l k8s-app=kube-dns
 * `calico/` – Calico configuration
 * `exm*/` – Experimental workloads and scripts
 * `setup_*.sh` – Environment setup scripts
+
+---
+
+## Citation
+
+The code in this repository is mostly described in the papers below. Please consider citing this work if you find the repository helpful.
+
+```
+@inproceedings{liu2026beeqos,
+  title={BeeQoS: A Cloud-Native QoS System for Adaptive and Scalable Multi-Priority Bandwidth Guarantees},
+  author={Liu, Jinyao and Wu, Si and Ma, Haoyuan and Li, Chaoqun and Yu, Hongjing and Jia, Dingyi and Li, Feng and Hu, Pengfei},
+  booktitle={Proceedings of the ACM Web Conference 2026},
+  pages={5515--5524},
+  year={2026}
+}
+```
