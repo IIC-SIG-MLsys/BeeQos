@@ -71,13 +71,10 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 ## 3. BeeQos / BWM Build and Image Distribution
 
-### 3.1 Clone Source Code and Switch Branch
+### 3.1 Clone Source Code
 
 ```bash
-git clone https://github.com/derekwin/demo-cli.git bwm
-cd bwm
-git checkout -b bwm origin/dhc-elf
-cd ..
+git clone https://github.com/IIC-SIG-MLsys/BeeQos.git
 ```
 
 ### 3.2 Specify the Physical Network Interface
