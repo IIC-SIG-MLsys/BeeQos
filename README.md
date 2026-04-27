@@ -1,7 +1,6 @@
 # BeeQos
 
 BeeQos is a fine-grained QoS and bandwidth management system in Kubernetes clusters.
-It is implemented based on **eBPF and Linux Traffic Control (TC)**.
 
 This repository includes:
 
